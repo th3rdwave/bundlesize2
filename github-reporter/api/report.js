@@ -1,4 +1,4 @@
-const check = require('./_check')
+const check = require('../src/_check')
 
 module.exports = async (req, res) => {
   const data = req.body

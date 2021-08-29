@@ -6,7 +6,7 @@ const { Colors, WithoutColors } = require('./colors')
 
 const summarize = (results, cachedResults = [], options = {}) => {
   const colors = options.colors === false ? WithoutColors : Colors
-  const baseBranch = options.baseBranch || 'master'
+  const baseBranch = options.baseBranch
 
   const status = results.status
 
@@ -36,7 +36,7 @@ const summarize = (results, cachedResults = [], options = {}) => {
   const summary = getSummary(results.counter, colors, cacheSummary)
   const title = getTitle(results.counter, details, summary)
 
-  return { status, details, summary, title }
+  return { status, details, summary, title, name: options.name }
 }
 
 module.exports = summarize
@@ -97,7 +97,8 @@ function getCacheSummary(results, cachedResults, baseBranch) {
 
   let message = ``
   if (totalDiff === 0) message = `same as ${baseBranch}`
-  else if (totalDiff > 0) message = `${bytes(totalDiff)} larger than ${baseBranch}`
+  else if (totalDiff > 0)
+    message = `${bytes(totalDiff)} larger than ${baseBranch}`
   else message = `${bytes(-totalDiff)} smaller than ${baseBranch}`
 
   return message

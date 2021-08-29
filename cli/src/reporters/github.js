@@ -1,22 +1,25 @@
 const { ci, repo, sha } = require('ci-env')
 const fetch = require('node-fetch')
 
-let API = 'https://bundlesize-github-reporter.now.sh'
+let API = 'https://bundlesize.vercel.app/api/report'
 // if (ci === 'custom') API = 'http://localhost:3000'
 
 async function report(summary) {
-  const { status, title, details } = summary
+  const { name, status, title, details } = summary
   const text =
     details > 60000
       ? details.substring(0, 60000) + '… (message truncated)'
       : details
 
-  const body = { repo, sha, status, title, text }
+  const body = { name, repo, sha, status, title, text }
 
   await fetch(API, {
     method: 'post',
     body: JSON.stringify(body),
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
   })
     .then(res => {
       if (res.status !== 200) {

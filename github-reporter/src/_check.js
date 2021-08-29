@@ -4,8 +4,8 @@ const { Octokit } = require('@octokit/rest')
 const { createAppAuth } = require('@octokit/auth-app')
 
 // application level constants
-const appId = 62449
-const name = 'bundlesize2'
+const appId = 134902
+const appName = 'bundlesize'
 
 const app = new Octokit({
   authStrategy: createAppAuth,
@@ -18,13 +18,17 @@ const getInstallation = async ({ owner, repo }) => {
     const installationId = data.id
     return { data: { installationId } }
   } catch (error) {
-    console.log({
-      method: error.request.method,
-      url: error.request.url,
-      status: error.status,
-      name: error.name,
-      documentation_url: error.documentation_url,
-    })
+    if (error.request) {
+      console.log({
+        method: error.request?.method,
+        url: error.request?.url,
+        status: error.status,
+        name: error.name,
+        documentation_url: error.documentation_url,
+      })
+    } else {
+      console.log(error)
+    }
     return { error }
   }
 }
@@ -57,6 +61,7 @@ const createCheck = async ({
 
 const run = async ({
   repo: repositoryPath,
+  name,
   sha,
   status,
   title = '',
@@ -89,7 +94,7 @@ const run = async ({
   if (error) {
     return {
       status: 404,
-      message: `${name} is not installed on this repository. Please configure the application with this link: https://github.com/apps/bundlesize2`,
+      message: `${appName} is not installed on this repository. Please configure the application with this link: https://github.com/apps/bundlesize2`,
     }
   }
 
@@ -102,7 +107,15 @@ const run = async ({
 
   // create check
   const conclusion = status === 'fail' ? 'failure' : 'success'
-  await createCheck({ token, name, owner, repo, sha, conclusion, output })
+  await createCheck({
+    token,
+    name: appName + (name != null ? ` • ${name}` : ''),
+    owner,
+    repo,
+    sha,
+    conclusion,
+    output,
+  })
   console.log('4/4 end of request \n\n')
 
   return { status: 200, message: 'Added check' }

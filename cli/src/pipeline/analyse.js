@@ -35,7 +35,7 @@ function analyse(config) {
 
   const status = counter.fail ? 'fail' : 'pass'
 
-  return { files, counter, status }
+  return { files, counter, status, name: config.name }
 }
 
 module.exports = analyse

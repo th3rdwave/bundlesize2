@@ -15,18 +15,21 @@ const summarize = require('./src/utils/summarize')
 
 const run = async () => {
   const results = analyse(markDuplicates(files))
+  const { baseBranch = 'main', name } = files
 
-  if (ci && branch === 'master' && !process.env.INTERNAL_SKIP_CACHE) {
+  if (ci && branch === baseBranch && !process.env.INTERNAL_SKIP_CACHE) {
     await cache.save(results)
   }
-  const cachedResults = await cache.read()
+  const cachedResults = await cache.read({ name })
 
-  const summary = summarize(results, cachedResults)
+  const summary = summarize(results, cachedResults, { baseBranch, name })
   cli.report(summary)
 
   if (ci && flags.enableGitHubChecks) {
     const summaryWithoutColors = summarize(results, cachedResults, {
       colors: false,
+      baseBranch,
+      name,
     })
     await github.report(summaryWithoutColors)
   }
