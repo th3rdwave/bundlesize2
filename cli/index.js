@@ -2,7 +2,7 @@
 
 const { ci, branch, platform } = require('ci-env')
 
-const { flags } = require('./src/pipeline/config')
+const { flags, baseBranch, name } = require('./src/pipeline/config')
 const files = require('./src/pipeline/files')
 const markDuplicates = require('./src/pipeline/mark-duplicates')
 const analyse = require('./src/pipeline/analyse')
@@ -15,7 +15,6 @@ const summarize = require('./src/utils/summarize')
 
 const run = async () => {
   const results = analyse(markDuplicates(files))
-  const { baseBranch = 'main', name } = files
 
   if (ci && branch === baseBranch && !process.env.INTERNAL_SKIP_CACHE) {
     await cache.save(results)

@@ -43,13 +43,15 @@ https://github.com/siddharthkp/bundlesize#configuration
 }
 
 if (program.files) {
-  configFromCli = [
-    {
-      path: program.files,
-      maxSize: program.maxSize,
-      compression: program.compression || 'gzip',
-    },
-  ]
+  configFromCli = {
+    files: [
+      {
+        path: program.files,
+        maxSize: program.maxSize,
+        compression: program.compression || 'gzip',
+      },
+    ],
+  }
 }
 
 /* Config from file */
@@ -61,7 +63,7 @@ const result = explorer.searchSync()
 
 if (result) {
   if (result.filepath.includes('package.json')) configFromFile = result.config
-  else configFromFile = result.config.files
+  else configFromFile = result.config
 }
 
 /* Send to readme if no configuration is provided */
@@ -77,15 +79,20 @@ https://github.com/siddharthkp/bundlesize#configuration
   )
 }
 
-const files = configFromCli || configFromFile
+const config = configFromCli || configFromFile
 
 debug('config from cli params', configFromCli)
 debug('config from bundlesize.config', configFromFile)
-debug('selected config', files)
+debug('selected config', config)
 
 const flags = {
   debug: program.debug,
   enableGitHubChecks: program.enableGithubChecks,
 }
 
-module.exports = { files, flags }
+module.exports = {
+  files: config.files,
+  name: config.name,
+  baseBranch: config.baseBranch || 'main',
+  flags,
+}
