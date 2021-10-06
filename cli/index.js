@@ -16,10 +16,10 @@ const summarize = require('./src/utils/summarize')
 const run = async () => {
   const results = analyse(markDuplicates(files))
   console.log('CI status', ci, branch, baseBranch)
+  const cachedResults = await cache.read({ name })
   if (ci && branch === baseBranch && !process.env.INTERNAL_SKIP_CACHE) {
     await cache.save(results)
   }
-  const cachedResults = await cache.read({ name })
 
   const summary = summarize(results, cachedResults, { baseBranch, name })
   cli.report(summary)

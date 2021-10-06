@@ -1,6 +1,6 @@
 {
   "name": "@th3rdwave/bundlesize",
-  "version": "0.0.34",
+  "version": "0.0.36",
   "description": "Keep your bundle size in check",
   "main": "index.js",
   "bin": {
