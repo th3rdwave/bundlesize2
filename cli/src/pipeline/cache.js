@@ -6,12 +6,14 @@ let API = 'https://bundlesize-cache.now.sh'
 
 const api = {
   get: async ({ repo, name = 'root' }) => {
+    console.log('cache api get', repo, name)
     return await fetch(`${API}?repo=${repo}_${name}`, {
       method: 'get',
       headers: { 'Content-Type': 'application/json' },
     })
       .then(res => res.json())
       .then(json => {
+        console.log('cache api get response', json)
         if (json.filesMatched && json.filesMatched.length) {
           return JSON.parse(json.filesMatched)
         } else return []
@@ -19,9 +21,15 @@ const api = {
       .catch(error => console.log(error))
   },
   put: async ({ repo, branch, sha, filesMatched, name = 'root' }) => {
+    console.log('cache api put', repo, branch, sha, filesMatched, name)
     return await fetch(API, {
       method: 'put',
-      body: JSON.stringify({ repo: `${repo}_${name}`, branch, sha, filesMatched }),
+      body: JSON.stringify({
+        repo: `${repo}_${name}`,
+        branch,
+        sha,
+        filesMatched,
+      }),
       headers: { 'Content-Type': 'application/json' },
     }).catch(error => {
       console.log('Could not cache values for ' + sha)
@@ -45,6 +53,7 @@ const getFilesMatched = ({ files }) => {
 
 const cache = {
   read: async ({ name }) => {
+    console.log('cache read', repo, name)
     if (!repo) return
 
     const cachedResults = await api.get({ repo, name })
@@ -52,7 +61,6 @@ const cache = {
   },
   save: async ({ files, name }) => {
     const filesMatched = getFilesMatched({ files })
-
     try {
       await api.put({
         name,
